@@ -170,7 +170,39 @@ private:
 
 												break;
 											}
+										case 3:
+											{
+												if (osvi.wProductType == VER_NT_WORKSTATION)
+													strOSName = _T("Windows 8.1");
+												else
+													strOSName = _T("Windows Server 2012 R2");
+
+												break;
+											}
+										case 4:
+											{
+												// Windows 10 was originally v6.4 
+												strOSName = _T("Windows 10 (Technical Preview)");
+												break;
+											}
 									}
+									break;
+								}
+
+							case 10:
+								{
+									switch (osvi.dwMinorVersion)
+									{
+										case 0:
+											{
+												if (osvi.wProductType == VER_NT_WORKSTATION)
+													strOSName = _T("Windows 10");
+												else
+													strOSName = _T("Windows Server 2016");
+												break;
+											}
+									}
+
 									break;
 								}
 						}
