@@ -61,8 +61,8 @@ private:
 		this->nDiskTotal = 0;
 		this->nDiskFree = 0;
 
-		DWORD dwSize = GetLogicalDriveStrings(0, NULL);
-		LPTSTR pszDrives = new TCHAR[dwSize + 2];
+		auto dwSize = GetLogicalDriveStrings(0, nullptr);
+		auto pszDrives = new TCHAR[dwSize + 2];
 		GetLogicalDriveStrings(dwSize + 2,pszDrives);
 
 		LPCTSTR pszDrv = pszDrives;
@@ -71,7 +71,7 @@ private:
 				nTotalBytes = 0;
 				nFreeBytes = 0;
 
-				GetDiskFreeSpaceEx(pszDrv, NULL, (PULARGE_INTEGER)&nTotalBytes,(PULARGE_INTEGER)&nFreeBytes);
+				GetDiskFreeSpaceEx(pszDrv, nullptr, reinterpret_cast<PULARGE_INTEGER>(&nTotalBytes), reinterpret_cast<PULARGE_INTEGER>(&nFreeBytes));
 
 				this->nDiskTotal += static_cast<ULONG>(nTotalBytes / 1024 / 1024);
 				this->nDiskFree += static_cast<ULONG>(nFreeBytes / 1024 / 1024);
@@ -81,20 +81,18 @@ private:
 		}
 
 		free(pszDrives);
-
-		return;
 	}
 
 	void GetCPUInfo() {
 		HKEY hKey;
 		DWORD dwSize;
-		LPTSTR szTemp = new TCHAR[1024];
-		int nPos = -1;
+		auto szTemp = new TCHAR[1024];
+		auto nPos = -1;
 
 		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"), 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
 			// Get CPU name
 			ZeroMemory(szTemp, 1024);
-			if (RegQueryValueEx(hKey, _T("ProcessorNameString"), NULL, NULL, (LPBYTE)szTemp, &dwSize) == ERROR_SUCCESS) {
+			if (RegQueryValueEx(hKey, _T("ProcessorNameString"), nullptr, nullptr, reinterpret_cast<LPBYTE>(szTemp), &dwSize) == ERROR_SUCCESS) {
 				this->strCPUName = szTemp;
 
 				this->strCPUName = ReplaceAll(this->strCPUName, _T("(TM)"), _T(""));
@@ -104,12 +102,12 @@ private:
 
 			// Get CPU manufacturer
 			ZeroMemory(szTemp, 1024);
-			if (RegQueryValueEx(hKey, _T("VendorIdentifier"), NULL, NULL, (LPBYTE)szTemp, &dwSize) == ERROR_SUCCESS)
+			if (RegQueryValueEx(hKey, _T("VendorIdentifier"), nullptr, nullptr, reinterpret_cast<LPBYTE>(szTemp), &dwSize) == ERROR_SUCCESS)
 				this->strCPUManufacturer = szTemp;
 
 			// Get CPU Frequency
 			DWORD dwCPUFreq = 0;
-			if (RegQueryValueEx(hKey, _T("~MHz"), NULL, NULL, (LPBYTE)&dwCPUFreq, &dwSize) == ERROR_SUCCESS)
+			if (RegQueryValueEx(hKey, _T("~MHz"), nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwCPUFreq), &dwSize) == ERROR_SUCCESS)
 				this->nCPUFreq = dwCPUFreq;
 		} else {
 			this->strCPUManufacturer = _T("Unknown");
@@ -127,8 +125,6 @@ private:
 		this->nCPUCores = siSysInfo.dwNumberOfProcessors;
 
 		RegCloseKey(hKey);
-
-		return;
 	}
 
 	

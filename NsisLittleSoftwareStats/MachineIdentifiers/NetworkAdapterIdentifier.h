@@ -21,29 +21,30 @@
 class NetworkAdapterIdentifier : MachineIdentifier {
 public:
 	NetworkAdapterIdentifier(void) { }
-	~NetworkAdapterIdentifier(void) { }
+
+	virtual ~NetworkAdapterIdentifier(void) { }
 
 	LPBYTE GetIdentifierHash() {
 		LPTSTR szNetworkAddress = new TCHAR[13];
-		PIP_ADAPTER_INFO pAdapterInfo, pAdapter = NULL;
+		PIP_ADAPTER_INFO pAdapterInfo, pAdapter = nullptr;
 		DWORD dwRetVal = 0;
 
 		ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
 
-		pAdapterInfo = (IP_ADAPTER_INFO *) malloc(sizeof(IP_ADAPTER_INFO));
-		if (pAdapterInfo == NULL) {
+		pAdapterInfo = static_cast<IP_ADAPTER_INFO *>(malloc(sizeof(IP_ADAPTER_INFO)));
+		if (pAdapterInfo == nullptr) {
 			TRACE(_T("Error allocating memory needed to call GetAdaptersinfo()"));
-			return NULL;
+			return nullptr;
 		}
 
 		// Make an initial call to GetAdaptersInfo to get the necessary size into the ulOutBufLen variable
 		if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == ERROR_BUFFER_OVERFLOW) {
 			free(pAdapterInfo);
-			pAdapterInfo = (IP_ADAPTER_INFO *)malloc(ulOutBufLen);
+			pAdapterInfo = static_cast<IP_ADAPTER_INFO *>(malloc(ulOutBufLen));
 
-			if (pAdapterInfo == NULL) {
+			if (pAdapterInfo == nullptr) {
 				TRACE(_T("Error allocating memory needed to call GetAdaptersinfo()"));
-				return NULL;
+				return nullptr;
 			}
 		}
 
@@ -69,7 +70,7 @@ public:
 			}
 		} else {
 			TRACE(_T("GetAdaptersInfo() call failed"));
-			return NULL;
+			return nullptr;
 		}
 
 		if (pAdapterInfo)

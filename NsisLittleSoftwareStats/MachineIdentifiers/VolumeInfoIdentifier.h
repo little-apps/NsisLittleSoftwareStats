@@ -22,8 +22,9 @@ class VolumeInfoIdentifier : MachineIdentifier {
 public:
 	VolumeInfoIdentifier(void) { }
 	~VolumeInfoIdentifier(void) { }
+
 	LPBYTE GetIdentifierHash() {
-		LPTSTR szId = new TCHAR[50];
+		auto szId = new TCHAR[50];
 		TCHAR szVolumeName[MAX_PATH + 1];
 		TCHAR szFileSystemName[MAX_PATH + 1];
 		DWORD dwSerialNumber = 0;
@@ -35,9 +36,9 @@ public:
 		ZeroMemory(szFileSystemName, MAX_PATH);
 
 		if (GetVolumeInformation(
-			NULL,
+			nullptr,
 			szVolumeName,
-			sizeof(szVolumeName),
+			sizeof szVolumeName,
 			&dwSerialNumber,
 			&dwMaxComponentLen,
 			&dwFileSystemFlags,

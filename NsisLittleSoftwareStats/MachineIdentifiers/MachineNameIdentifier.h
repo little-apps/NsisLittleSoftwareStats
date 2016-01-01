@@ -23,7 +23,7 @@ public:
 	MachineNameIdentifier(void) { }
 	~MachineNameIdentifier(void) { }
 	LPBYTE GetIdentifierHash() {
-		LPTSTR szId = new TCHAR[100];
+		auto szId = new TCHAR[100];
 		DWORD nLength = 100;
 
 		ZeroMemory(szId, 100);

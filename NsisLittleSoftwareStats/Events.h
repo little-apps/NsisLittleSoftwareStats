@@ -71,10 +71,10 @@ public:
 	}
 
 	Types Type;
-	int i;
+	int i = INT_MIN;
 	tstring s;
-	double d;
-	unsigned long ul;
+	double d = NAN;
+	unsigned long ul = -ULONG_MAX;
 };
 
 class EventData {
@@ -82,7 +82,7 @@ public:
 	EventData(tstring strEventCode, tstring strSessionId, int nFlowId = 0) {
 		this->Add(_T("tp"), strEventCode);
 		this->Add(_T("ss"), strSessionId);
-		this->Add(_T("ts"), (int)std::time(0));
+		this->Add(_T("ts"), static_cast<int>(std::time(nullptr)));
 
 		if (nFlowId != 0)
 			this->Add(_T("fl"), nFlowId);
@@ -120,15 +120,15 @@ public:
 			output << _T("[[");
 
 			for (i = 0; i != this->events_vector.size(); i++) {
-				EventData ev = this->events_vector[i];
+				auto ev = this->events_vector[i];
 
 				output << _T("{");
 
 				j = 0;
 
 				for (it = ev.hash_table.begin(); it != ev.hash_table.end(); ++it) {
-					tstring key = it->first;
-					EventDataValue value = it->second;
+					auto key = it->first;
+					auto value = it->second;
 
 					output << StringFormat(_T("\"%s\": "), key.c_str());
 
@@ -161,15 +161,15 @@ public:
 			output << _T("<?xml version=\"1.0\"?><data><Events>");
 
 			for (i = 0; i != this->events_vector.size(); i++) {
-				EventData ev = this->events_vector[i];
+				auto ev = this->events_vector[i];
 
 				output << _T("<Event>");
 
 				j = 0;
 
 				for (it = ev.hash_table.begin(); it != ev.hash_table.end(); ++it) {
-					tstring key = it->first;
-					EventDataValue value = it->second;
+					auto key = it->first;
+					auto value = it->second;
 
 					output << StringFormat(_T("<%s>"), key.c_str());
 

@@ -63,17 +63,17 @@ tstring GenerateId() {
 	CoCreateGuid(&guid);
 
 #if defined _UNICODE || defined UNICODE
-	UuidToString((UUID*)&guid, (RPC_WSTR*)&str);
+	UuidToString(static_cast<UUID*>(&guid), static_cast<RPC_WSTR*>(&str));
 #else
-	UuidToString((UUID*)&guid, (RPC_CSTR*)&str);
+	UuidToString(static_cast<UUID*>(&guid), static_cast<RPC_CSTR*>(&str));
 #endif
 
-	unique = tstring((LPTSTR)str);
+	unique = tstring(reinterpret_cast<LPTSTR>(str));
 
 #if defined _UNICODE || defined UNICODE
-	RpcStringFree((RPC_WSTR*)&str);
+	RpcStringFree(static_cast<RPC_WSTR*>(&str));
 #else
-	RpcStringFree((RPC_CSTR*)&str);
+	RpcStringFree(static_cast<RPC_CSTR*>(&str));
 #endif
 
 	unique = ReplaceAll(unique, _T("-"), _T(""));
@@ -116,9 +116,9 @@ tstring Enquoute(tstring s) {
 	str << _T('"');
 
 	for (i = 0; i < nLen; i++) {
-		TCHAR c = s[i];
+		auto c = s[i];
 
-		if ((c == '\\') || (c == '"') || (c == '>')) {
+		if (c == '\\' || c == '"' || c == '>') {
 			str << _T("\\");
 			str << c;
 		} else if (c == '\b')
@@ -148,15 +148,14 @@ tstring Enquoute(tstring s) {
 LPSTR ConvertUTF16ToUTF8(LPCWSTR pszTextUTF16) {
 	// Special case of NULL or empty input string
 
-	if ( (pszTextUTF16 == NULL) || (*pszTextUTF16 == _T('\0')) )
+	if ( pszTextUTF16 == nullptr || *pszTextUTF16 == _T('\0') )
 		// Return empty string
 		return "";
 
 	// Consider WCHAR's count corresponding to total input string length,
 	// including end-of-string (L'\0') character.
 
-	size_t cchUTF16;
-	cchUTF16 = wcslen(pszTextUTF16);
+	auto cchUTF16 = wcslen(pszTextUTF16);
 
 	if (cchUTF16 <= 0) {
 		return "";
@@ -174,7 +173,7 @@ LPSTR ConvertUTF16ToUTF8(LPCWSTR pszTextUTF16) {
 	ZeroMemory(&osvi, sizeof(osvi));
 
 	osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-	if (!GetVersionEx((OSVERSIONINFO*) &osvi))
+	if (!GetVersionEx(reinterpret_cast<OSVERSIONINFO*>(&osvi)))
 		// Failed to get OS version
 		return "";
 
@@ -185,34 +184,34 @@ LPSTR ConvertUTF16ToUTF8(LPCWSTR pszTextUTF16) {
 
 	// Get size of destination UTF-8 buffer, in CHAR's (= bytes)
 
-	int cbUTF8 = ::WideCharToMultiByte(
+	auto cbUTF8 = ::WideCharToMultiByte(
 		CP_UTF8,                // convert to UTF-8
 		dwConversionFlags,      // specify conversion behavior
 		pszTextUTF16,           // source UTF-16 string
 		static_cast<int>( cchUTF16 ),   // total source string length, in WCHAR's, including end-of-string \0
-		NULL,                   // unused - no conversion required in this step
+		nullptr,                   // unused - no conversion required in this step
 		0,                      // request buffer size
-		NULL, NULL              // unused
+		nullptr, nullptr              // unused
 		);
 
 	if (cbUTF8 == 0)
 		return "";
 
 	// Allocate destination buffer for UTF-8 string
-	int cchUTF8 = cbUTF8; // sizeof(CHAR) = 1 byte
-	LPSTR szUTF8 = new CHAR[cchUTF8];
+	auto cchUTF8 = cbUTF8; // sizeof(CHAR) = 1 byte
+	auto szUTF8 = new CHAR[cchUTF8];
 
 	ZeroMemory(szUTF8, cchUTF8);
 
 	// Do the conversion from UTF-16 to UTF-8
-	int result = ::WideCharToMultiByte(
+	auto result = ::WideCharToMultiByte(
 		CP_UTF8,                // convert to UTF-8
 		dwConversionFlags,      // specify conversion behavior
 		pszTextUTF16,           // source UTF-16 string
 		static_cast<int>( cchUTF16 ),   // total source string length, in WCHAR's, including end-of-string \0
 		szUTF8,                 // destination buffer
 		cbUTF8,                 // destination buffer size, in bytes
-		NULL, NULL              // unused
+		nullptr, nullptr              // unused
 		); 
 
 	if (result == 0) 
@@ -223,37 +222,37 @@ LPSTR ConvertUTF16ToUTF8(LPCWSTR pszTextUTF16) {
 }
 
 int SendPost(tstring strUri, wstring strData) {
-	HINTERNET hInt,hConn,hReq;
+	HINTERNET hInt = nullptr, hConn = nullptr, hReq = nullptr;
 	int flags;
 	DWORD dwSize, dwFlags;
 
 	strData.insert(0, L"data=");
 
 	try {
-		LPSTR szHdr = ConvertUTF16ToUTF8(L"Content-Type: application/x-www-form-urlencoded");
-		LPSTR szData = ConvertUTF16ToUTF8(strData.c_str());
+		auto szHdr = ConvertUTF16ToUTF8(L"Content-Type: application/x-www-form-urlencoded");
+		auto szData = ConvertUTF16ToUTF8(strData.c_str());
 
 		if (strcmp(szData, "") == 0) // Error converting to UTF8
 			return FALSE;
 
 		hInt = InternetOpen(API_USERAGENT, INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0);
 
-		if (hInt == NULL)
+		if (hInt == nullptr)
 			return FALSE;
 
 		// Set HTTP request timeout
 		if (API_TIMEOUT > 0) {
-			int nPostTimeout = API_TIMEOUT;
-			InternetSetOption(hInt, INTERNET_OPTION_CONNECT_TIMEOUT, &nPostTimeout, sizeof(nPostTimeout));
-			InternetSetOption(hInt, INTERNET_OPTION_SEND_TIMEOUT, &nPostTimeout, sizeof(nPostTimeout));
-			InternetSetOption(hInt, INTERNET_OPTION_RECEIVE_TIMEOUT, &nPostTimeout, sizeof(nPostTimeout));
+			auto nPostTimeout = API_TIMEOUT;
+			InternetSetOption(hInt, INTERNET_OPTION_CONNECT_TIMEOUT, &nPostTimeout, sizeof nPostTimeout);
+			InternetSetOption(hInt, INTERNET_OPTION_SEND_TIMEOUT, &nPostTimeout, sizeof nPostTimeout);
+			InternetSetOption(hInt, INTERNET_OPTION_RECEIVE_TIMEOUT, &nPostTimeout, sizeof nPostTimeout);
 		}
 
 		// Crack URI
 		URL_COMPONENTS urlComp;
 
-		ZeroMemory(&urlComp, sizeof(urlComp));
-		urlComp.dwStructSize = sizeof(urlComp);
+		ZeroMemory(&urlComp, sizeof urlComp);
+		urlComp.dwStructSize = sizeof urlComp;
 
 		// Set required component lengths to non-zero so that they are cracked.
 		urlComp.dwHostNameLength = static_cast<DWORD>(-1);
@@ -268,9 +267,9 @@ int SendPost(tstring strUri, wstring strData) {
 
 		tstring strHost = urlComp.lpszHostName;
 
-		hConn = InternetConnect(hInt, strHost.substr(0, strHost.find_first_of('/')).c_str(), urlComp.nPort, NULL, NULL, INTERNET_SERVICE_HTTP, 0, 1);
+		hConn = InternetConnect(hInt, strHost.substr(0, strHost.find_first_of('/')).c_str(), urlComp.nPort, nullptr, nullptr, INTERNET_SERVICE_HTTP, 0, 1);
 
-		if (hConn == NULL) {
+		if (hConn == nullptr) {
 			InternetCloseHandle(hInt);
 			return FALSE;
 		}
@@ -280,9 +279,9 @@ int SendPost(tstring strUri, wstring strData) {
 		else
 			flags = INTERNET_FLAG_NO_UI;
 
-		hReq = HttpOpenRequest(hConn, _T("POST"), urlComp.lpszUrlPath, NULL, NULL, NULL, flags, 1);
+		hReq = HttpOpenRequest(hConn, _T("POST"), urlComp.lpszUrlPath, nullptr, nullptr, nullptr, flags, 1);
 
-		if (hReq == NULL) {
+		if (hReq == nullptr) {
 			InternetCloseHandle(hInt);
 			InternetCloseHandle(hConn);
 
@@ -290,10 +289,10 @@ int SendPost(tstring strUri, wstring strData) {
 		}
 
 		if (urlComp.nScheme == INTERNET_SCHEME_HTTPS) {
-			dwSize = sizeof(dwFlags);
+			dwSize = sizeof dwFlags;
 			if (InternetQueryOption(hReq, INTERNET_OPTION_SECURITY_FLAGS, &dwFlags, &dwSize)) {
 				dwFlags = dwFlags | SECURITY_FLAG_IGNORE_UNKNOWN_CA;
-				if (!InternetSetOption(hReq, INTERNET_OPTION_SECURITY_FLAGS, &dwFlags, sizeof(dwSize))) {
+				if (!InternetSetOption(hReq, INTERNET_OPTION_SECURITY_FLAGS, &dwFlags, sizeof dwSize)) {
 					InternetCloseHandle(hInt);
 					InternetCloseHandle(hConn);
 					InternetCloseHandle(hReq);

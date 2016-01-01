@@ -21,8 +21,13 @@
 #include "md5.h"
 
 class MachineIdentifier {
+protected:
+	~MachineIdentifier()
+	{
+	}
+
 public:
-	LPBYTE ComputeHash(LPTSTR szId) {
+	static LPBYTE ComputeHash(LPTSTR szId) {
 		MD5 md5(szId);
 		return md5.hash();
 	}

@@ -26,9 +26,9 @@ extern "C" {
 HINSTANCE g_hInstance;
 HWND g_hwndParent;
 
-BOOL APIENTRY DllMain( HMODULE hModule,
+BOOL APIENTRY DllMain( HMODULE /*hModule*/,
 	DWORD  ul_reason_for_call,
-	LPVOID lpReserved
+	LPVOID /*lpReserved*/
 	)
 {
 	switch (ul_reason_for_call)
@@ -44,7 +44,7 @@ BOOL APIENTRY DllMain( HMODULE hModule,
 
 void __declspec(dllexport) TrackInstallation(HWND hwndParent, int string_size, 
 	TCHAR *variables, stack_t **stacktop,
-	extra_parameters *extra)
+	extra_parameters */*extra*/)
 {
 	g_hwndParent=hwndParent;
 
@@ -57,10 +57,10 @@ void __declspec(dllexport) TrackInstallation(HWND hwndParent, int string_size,
 	// and the second time would give you poop.dat. 
 	// you should empty the stack of your parameters, and ONLY your
 	// parameters.
-	LPTSTR szURI = new TCHAR[string_size];
-	LPTSTR szFormat = new TCHAR[string_size];
-	LPTSTR szAppID = new TCHAR[string_size];
-	LPTSTR szAppVer = new TCHAR[string_size];
+	auto szURI = new TCHAR[string_size];
+	auto szFormat = new TCHAR[string_size];
+	auto szAppID = new TCHAR[string_size];
+	auto szAppVer = new TCHAR[string_size];
 
 	tstring strUri, strFormat;
 	tstring strApplicationId, strApplicationVer;
@@ -145,7 +145,7 @@ void __declspec(dllexport) TrackInstallation(HWND hwndParent, int string_size,
 
 void __declspec(dllexport) TrackUninstallation(HWND hwndParent, int string_size, 
 	TCHAR *variables, stack_t **stacktop,
-	extra_parameters *extra)
+	extra_parameters */*extra*/)
 {
 	g_hwndParent=hwndParent;
 
@@ -158,10 +158,10 @@ void __declspec(dllexport) TrackUninstallation(HWND hwndParent, int string_size,
 	// and the second time would give you poop.dat. 
 	// you should empty the stack of your parameters, and ONLY your
 	// parameters.
-	LPTSTR szURI = new TCHAR[string_size];
-	LPTSTR szFormat = new TCHAR[string_size];
-	LPTSTR szAppID = new TCHAR[string_size];
-	LPTSTR szAppVer = new TCHAR[string_size];
+	auto szURI = new TCHAR[string_size];
+	auto szFormat = new TCHAR[string_size];
+	auto szAppID = new TCHAR[string_size];
+	auto szAppVer = new TCHAR[string_size];
 
 	tstring strUri, strFormat;
 	tstring strApplicationId, strApplicationVer;
@@ -239,8 +239,6 @@ void __declspec(dllexport) TrackUninstallation(HWND hwndParent, int string_size,
 #endif
 
 	pushint(SendPost(strUri, strData));
-
-	return;
 }
 
 #ifdef __cplusplus

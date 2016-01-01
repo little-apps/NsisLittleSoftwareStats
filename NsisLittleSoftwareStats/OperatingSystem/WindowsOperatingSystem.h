@@ -55,7 +55,7 @@ private:
 		ZeroMemory(&osvi, sizeof(OSVERSIONINFOEX));
 		osvi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 
-		if (GetVersionEx((OSVERSIONINFO*)&osvi) == FALSE) {
+		if (GetVersionEx(reinterpret_cast<OSVERSIONINFO*>(&osvi)) == FALSE) {
 			this->strVersion = _T("Unknown");
 			this->nServicePack = 0;
 			return;
@@ -215,11 +215,11 @@ private:
 
 		// Get OS Architecture
 		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment"), 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
-			LPTSTR szArch = new TCHAR[100];
+			auto szArch = new TCHAR[100];
 
 			ZeroMemory(szArch, 100);
 
-			if (RegQueryValueEx(hKey, _T("PROCESSOR_ARCHITECTURE"), NULL, NULL, (LPBYTE)szArch, &dwSize) == ERROR_SUCCESS) {
+			if (RegQueryValueEx(hKey, _T("PROCESSOR_ARCHITECTURE"), nullptr, nullptr, reinterpret_cast<LPBYTE>(szArch), &dwSize) == ERROR_SUCCESS) {
 				if (_tcscmp(szArch, _T("AMD64")) == 0)
 					this->nArchitecture = 64;
 				else
@@ -235,13 +235,13 @@ private:
 	void GetJavaVer() {
 		HKEY hKey;
 		DWORD dwSize;
-		LPTSTR szJavaVer = new TCHAR[100];
+		auto szJavaVer = new TCHAR[100];
 
 		ZeroMemory(szJavaVer, 100);
 
 		if (cWindowsHardware.nCPUArch == 64) {
 			if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\JavaSoft\\Java Runtime Environment"), 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
-				if (RegQueryValueEx(hKey, _T("CurrentVersion"), NULL, NULL, (LPBYTE)szJavaVer, &dwSize) == ERROR_SUCCESS)
+				if (RegQueryValueEx(hKey, _T("CurrentVersion"), nullptr, nullptr, reinterpret_cast<LPBYTE>(szJavaVer), &dwSize) == ERROR_SUCCESS)
 					this->strJavaVer = szJavaVer;
 
 				RegCloseKey(hKey);
@@ -252,7 +252,7 @@ private:
 			if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\JavaSoft\\Java Runtime Environment"), 0, KEY_READ|KEY_WOW64_32KEY, &hKey) == ERROR_SUCCESS) {
 				ZeroMemory(szJavaVer, 100);
 
-				if (RegQueryValueEx(hKey, _T("CurrentVersion"), NULL, NULL, (LPBYTE)szJavaVer, &dwSize) == ERROR_SUCCESS)
+				if (RegQueryValueEx(hKey, _T("CurrentVersion"), nullptr, nullptr, reinterpret_cast<LPBYTE>(szJavaVer), &dwSize) == ERROR_SUCCESS)
 					this->strJavaVer = szJavaVer;
 
 				RegCloseKey(hKey);
@@ -274,27 +274,27 @@ private:
 			if (RegOpenKeyEx(hKey, _T("v4"), 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
 				this->strFrameworkVer = _T("4.0");
 
-				if (RegQueryValueEx(hKey, _T("SP"), NULL, NULL, (LPBYTE)&dwServicePack, &dwSize) == ERROR_SUCCESS)
+				if (RegQueryValueEx(hKey, _T("SP"), nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwServicePack), &dwSize) == ERROR_SUCCESS)
 					this->nFrameworkSP = dwServicePack;
 			} else if (RegOpenKeyEx(hKey, _T("v3.5"), 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
 				this->strFrameworkVer = _T("3.5");
 
-				if (RegQueryValueEx(hKey, _T("SP"), NULL, NULL, (LPBYTE)&dwServicePack, &dwSize) == ERROR_SUCCESS)
+				if (RegQueryValueEx(hKey, _T("SP"), nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwServicePack), &dwSize) == ERROR_SUCCESS)
 					this->nFrameworkSP = dwServicePack;
 			} else if (RegOpenKeyEx(hKey, _T("v3.0"), 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
 				this->strFrameworkVer = _T("3.0");
 
-				if (RegQueryValueEx(hKey, _T("SP"), NULL, NULL, (LPBYTE)&dwServicePack, &dwSize) == ERROR_SUCCESS)
+				if (RegQueryValueEx(hKey, _T("SP"), nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwServicePack), &dwSize) == ERROR_SUCCESS)
 					this->nFrameworkSP = dwServicePack;
 			} else if (RegOpenKeyEx(hKey, _T("v2.0.50727"), 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
 				this->strFrameworkVer = _T("2.0.50727");
 
-				if (RegQueryValueEx(hKey, _T("SP"), NULL, NULL, (LPBYTE)&dwServicePack, &dwSize) == ERROR_SUCCESS)
+				if (RegQueryValueEx(hKey, _T("SP"), nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwServicePack), &dwSize) == ERROR_SUCCESS)
 					this->nFrameworkSP = dwServicePack;
 			} else if (RegOpenKeyEx(hKey, _T("v1.1.4322"), 0, KEY_READ, &hSubKey) == ERROR_SUCCESS) {
 				this->strFrameworkVer = _T("1.1.4322");
 
-				if (RegQueryValueEx(hKey, _T("SP"), NULL, NULL, (LPBYTE)&dwServicePack, &dwSize) == ERROR_SUCCESS)
+				if (RegQueryValueEx(hKey, _T("SP"), nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwServicePack), &dwSize) == ERROR_SUCCESS)
 					this->nFrameworkSP = dwServicePack;
 			} 
 
@@ -305,7 +305,7 @@ private:
 		} else if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("SOFTWARE\\Microsoft\\.NETFramework\\policy\\v1.0"), 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
 			DWORD dwServicePack = 0;
 
-			if (RegQueryValueEx(hKey, _T("SP"), NULL, NULL, (LPBYTE)&dwServicePack, &dwSize) == ERROR_SUCCESS)
+			if (RegQueryValueEx(hKey, _T("SP"), nullptr, nullptr, reinterpret_cast<LPBYTE>(&dwServicePack), &dwSize) == ERROR_SUCCESS)
 				this->nFrameworkSP = dwServicePack;
 
 			RegCloseKey(hKey);
