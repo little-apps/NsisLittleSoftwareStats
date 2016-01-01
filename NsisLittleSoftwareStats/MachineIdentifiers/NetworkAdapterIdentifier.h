@@ -26,8 +26,7 @@ public:
 
 	LPBYTE GetIdentifierHash() {
 		LPTSTR szNetworkAddress = new TCHAR[13];
-		PIP_ADAPTER_INFO pAdapterInfo, pAdapter = nullptr;
-		DWORD dwRetVal = 0;
+		PIP_ADAPTER_INFO pAdapterInfo, pAdapter;
 
 		ULONG ulOutBufLen = sizeof(IP_ADAPTER_INFO);
 
@@ -48,7 +47,7 @@ public:
 			}
 		}
 
-		if ((dwRetVal = GetAdaptersInfo(pAdapterInfo, &ulOutBufLen)) == NO_ERROR) {
+		if (GetAdaptersInfo(pAdapterInfo, &ulOutBufLen) == NO_ERROR) {
 			pAdapter = pAdapterInfo;
 
 			while (pAdapter) {

@@ -87,7 +87,6 @@ private:
 		HKEY hKey;
 		DWORD dwSize;
 		auto szTemp = new TCHAR[1024];
-		auto nPos = -1;
 
 		if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"), 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
 			// Get CPU name
