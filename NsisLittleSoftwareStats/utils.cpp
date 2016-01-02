@@ -63,7 +63,7 @@ tstring GenerateId() {
 	CoCreateGuid(&guid);
 
 #if defined _UNICODE || defined UNICODE
-	UuidToString(static_cast<UUID*>(&guid), static_cast<RPC_WSTR*>(&str));
+	UuidToString(static_cast<UUID*>(&guid), reinterpret_cast<RPC_WSTR*>(&str));
 #else
 	UuidToString(static_cast<UUID*>(&guid), static_cast<RPC_CSTR*>(&str));
 #endif
@@ -71,7 +71,7 @@ tstring GenerateId() {
 	unique = tstring(reinterpret_cast<LPTSTR>(str));
 
 #if defined _UNICODE || defined UNICODE
-	RpcStringFree(static_cast<RPC_WSTR*>(&str));
+	RpcStringFree(reinterpret_cast<RPC_WSTR*>(&str));
 #else
 	RpcStringFree(static_cast<RPC_CSTR*>(&str));
 #endif

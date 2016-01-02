@@ -48,6 +48,7 @@
 #pragma comment(lib, "iphlpapi.lib")
 #pragma comment(lib, "rpcrt4.lib")
 #pragma comment(lib, "wininet.lib")
+#pragma comment(lib, "version.lib")
 
 namespace std {
 #if defined _UNICODE || defined UNICODE
