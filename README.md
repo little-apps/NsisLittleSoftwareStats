@@ -6,7 +6,7 @@ This is a Dynamic Linking Library (DLL) for integrating the API for [Little Soft
 The first step is to download our library from http://getlittleapps.com/little-software-stats/libraries/nsis-latest.zip
 
 ### 2) Include The Library ###
-You will first need to add the “NsisLittleSoftwareStats.dll” file (located in the DLLs folder) to NSIS by copying it to “%ProgramFiles(x86)%\NSIS\Plugins”. If it’s NSIS Unicode, then you would need to copy “NsisLittleSoftwareStatsUnicode.dll” (located in the DLLs folder) to “%ProgramFiles(x86)%\NSIS\Unicode\Plugins”.
+You will first need to add the “NsisLittleSoftwareStats.dll” file (located in the DLLs folder) to NSIS by copying it to “%ProgramFiles(x86)%\NSIS\Plugins”. If it’s NSIS Unicode, then you would need to copy “NsisLittleSoftwareStatsUnicode.dll” (located in the DLLs folder) to “%ProgramFiles(x86)%\NSIS\Unicode\Plugins” as “NsisLittleSoftwareStats.dll”.
 
 ### 3) Integrate with your software ###
 Now you’ll want to integrate Little Software Stats by calling it using your NSIS code. We have included Example.nsi (from Little Disk Cleaner) which shows how to call the plugin using NSIS.
