@@ -20,22 +20,6 @@
 
 #include "..\Hardware\WindowsHardware.h"
 
-#ifndef DLLVERSIONINFO
-typedef struct _DllVersionInfo
-{
-	DWORD cbSize;
-	DWORD dwMajorVersion;
-	DWORD dwMinorVersion;
-	DWORD dwBuildNumber;
-	DWORD dwPlatformID;
-} DLLVERSIONINFO;
-
-#endif
-
-#ifndef DLLGETVERSIONPROC
-typedef int (FAR WINAPI *DLLGETVERSIONPROC) (DLLVERSIONINFO *);
-#endif
-
 class WindowsOperatingSystem {
 public:
 	WindowsOperatingSystem() {
